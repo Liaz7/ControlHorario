@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planilla de asistencia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --papel: #FBFCFD; --superficie: #FFFFFF; --texto: #1A1F2B; --suave: #5B6475;
+  --tinta: #1F3A93; --tinta-fondo: #E9EEF8; --linea: #D5DBE5;
+  --rojo: #B42318; --rojo-fondo: #FDE8E6; --marcador: #FFF1B8; --marcador-borde: #E5C100;
+  --ok: #1E7A46;
+  --fuente: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mano: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #12151C; --superficie: #1A1F2B; --texto: #E6E9F0; --suave: #9AA3B5;
+    --tinta: #9DB2FF; --tinta-fondo: #232B45; --linea: #2E3548;
+    --rojo: #FF8A7A; --rojo-fondo: #3A1F1D; --marcador: #3D3514; --marcador-borde: #A88C00;
+    --ok: #6FD39A; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #12151C; --superficie: #1A1F2B; --texto: #E6E9F0; --suave: #9AA3B5;
+  --tinta: #9DB2FF; --tinta-fondo: #232B45; --linea: #2E3548;
+  --rojo: #FF8A7A; --rojo-fondo: #3A1F1D; --marcador: #3D3514; --marcador-borde: #A88C00;
+  --ok: #6FD39A; color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; background: var(--papel); color: var(--texto); font-family: var(--fuente); font-size: 17px; line-height: 1.45; -webkit-text-size-adjust: 100%; }
+.envoltura { max-width: 760px; margin: 0 auto; padding: 20px 16px 96px; }
+header.cabeza { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 20px; padding-bottom: 14px; border-bottom: 2px solid var(--tinta); margin-bottom: 22px; }
+h1 { font-size: 1.75rem; line-height: 1.1; margin: 0; letter-spacing: -0.01em; }
+h1 span { display: block; font-family: var(--mano); font-weight: 700; color: var(--tinta); font-size: 1.45rem; letter-spacing: 0; margin-bottom: 2px; }
+.pestanas { display: inline-flex; border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; background: var(--superficie); }
+.pestanas button { font: inherit; font-size: 0.95rem; border: 0; background: transparent; color: var(--suave); padding: 9px 14px; cursor: pointer; min-height: 44px; }
+.pestanas button[aria-selected="true"] { background: var(--tinta); color: var(--papel); font-weight: 700; }
+h2 { font-size: 1.2rem; margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; }
+h2 .paso { font-family: var(--mano); font-size: 1.7rem; color: var(--tinta); line-height: 1; min-width: 1ch; }
+.bajada { color: var(--suave); margin: 0 0 14px; font-size: 0.95rem; }
+section.bloque { margin-bottom: 34px; }
+.panel { background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; padding: 16px; }
+.fila-campos { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: flex-end; }
+label.campo { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; color: var(--suave); }
+input[type=text], input[type=number], input[type=month], input[type=date], input[type=time], select {
+  font: inherit; font-size: 1rem; color: var(--texto); background: var(--papel); border: 1px solid var(--linea); border-radius: 8px; padding: 9px 10px; min-height: 44px; max-width: 100%;
+}
+input:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+.btn { font: inherit; font-size: 1rem; font-weight: 700; border-radius: 10px; padding: 10px 16px; min-height: 44px; cursor: pointer; border: 1px solid var(--tinta); background: var(--tinta); color: var(--papel); }
+.btn.sec { background: transparent; color: var(--tinta); }
+.btn.chico { font-size: 0.85rem; padding: 6px 10px; min-height: 36px; }
+.btn.peligro { background: transparent; color: var(--rojo); border-color: var(--rojo); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; align-items: center; }
+.foto-previa { margin-top: 14px; max-height: 220px; max-width: 100%; border-radius: 8px; border: 1px solid var(--linea); display: block; }
+.aviso { border-left: 4px solid var(--tinta); background: var(--tinta-fondo); padding: 10px 12px; border-radius: 0 8px 8px 0; margin-top: 14px; font-size: 0.95rem; }
+.aviso.alerta { border-color: var(--rojo); background: var(--rojo-fondo); }
+.aviso.marca { border-color: var(--marcador-borde); background: var(--marcador); }
+.oculto { display: none !important; }
+.progreso { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.progreso .puntos { font-family: var(--mano); font-size: 1.35rem; color: var(--tinta); }
+@keyframes latido { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.progreso .puntos { animation: latido 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .progreso .puntos { animation: none; } }
+
+/* Revisión */
+.personas { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px; }
+.chip { font: inherit; font-size: 0.95rem; white-space: nowrap; border: 1px solid var(--linea); background: var(--superficie); color: var(--texto); border-radius: 999px; padding: 8px 14px; min-height: 44px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.chip[aria-pressed="true"] { border-color: var(--tinta); background: var(--tinta-fondo); font-weight: 700; }
+.chip .cuenta { background: var(--marcador); border: 1px solid var(--marcador-borde); color: var(--texto); border-radius: 999px; font-size: 0.8rem; padding: 0 7px; font-weight: 700; }
+.chip .cuenta.mal { background: var(--rojo-fondo); border-color: var(--rojo); color: var(--rojo); }
+.dias { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linea); }
+.dia { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 12px; padding: 10px 0; border-bottom: 1px solid var(--linea); align-items: center; }
+.dia .fecha { font-weight: 700; font-size: 0.95rem; }
+.dia .fecha small { display: block; font-weight: 400; color: var(--suave); font-size: 0.8rem; }
+.dia .entrada-linea { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.dia input[type=text] { width: 12.5rem; font-variant-numeric: tabular-nums; }
+.dia .resultado { font-size: 0.9rem; color: var(--suave); }
+.dia .resultado.falta { color: var(--rojo); font-weight: 700; }
+.dia .resultado.obs { color: var(--texto); background: var(--marcador); padding: 1px 6px; border-radius: 4px; }
+.dia .resultado.mal { color: var(--rojo); }
+.dia .nota { grid-column: 2; font-size: 0.88rem; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+.dia.dudosa { background: linear-gradient(90deg, var(--marcador) 0 6px, transparent 6px); padding-left: 12px; }
+.dia.invalida { background: linear-gradient(90deg, var(--rojo) 0 6px, transparent 6px); padding-left: 12px; }
+.dia.dudosa, .dia.invalida { grid-template-columns: 52px minmax(0, 1fr); }
+.leido { font-family: var(--mano); font-size: 1.3rem; color: var(--tinta); line-height: 1; }
+.barra-revision { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.barra-revision p { margin: 0; font-size: 0.95rem; }
+
+/* Resumen */
+.tabla-scroll { overflow-x: auto; border: 1px solid var(--linea); border-radius: 12px; background: var(--superficie); }
+table.resumen { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+table.resumen th, table.resumen td { padding: 9px 10px; border-bottom: 1px solid var(--linea); text-align: center; }
+table.resumen th:first-child, table.resumen td:first-child { text-align: left; position: sticky; left: 0; background: var(--superficie); }
+table.resumen thead th { font-size: 0.8rem; color: var(--suave); font-weight: 700; background: var(--superficie); }
+table.resumen td.rojo { color: var(--rojo); font-weight: 700; }
+table.resumen td.na { color: var(--suave); }
+table.resumen tr:last-child td { border-bottom: 0; }
+
+/* Configuración */
+details.persona { background: var(--superficie); border: 1px solid var(--linea); border-radius: 12px; margin-bottom: 10px; }
+details.persona > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+details.persona > summary::-webkit-details-marker { display: none; }
+details.persona > summary strong { font-size: 1.05rem; }
+details.persona > summary span { color: var(--suave); font-size: 0.88rem; text-align: right; }
+details.persona[open] > summary { border-bottom: 1px solid var(--linea); }
+.persona-cuerpo { padding: 16px; display: grid; gap: 14px; }
+.tipo-opciones { display: flex; gap: 8px; flex-wrap: wrap; }
+.tipo-opciones label { display: flex; gap: 8px; align-items: center; border: 1px solid var(--linea); border-radius: 10px; padding: 8px 12px; min-height: 44px; cursor: pointer; font-size: 0.95rem; }
+.tipo-opciones label:has(input:checked) { border-color: var(--tinta); background: var(--tinta-fondo); font-weight: 700; }
+.horario { display: grid; gap: 6px; }
+.horario .hfila { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; }
+.horario .hfila label.dia-chk { display: flex; gap: 8px; align-items: center; font-weight: 700; min-height: 44px; }
+.horario .hfila .hvals { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; color: var(--suave); font-size: 0.9rem; }
+.horario .hfila .hvals input[type=time] { width: 7.5rem; }
+.horario .hfila .hvals input[type=number] { width: 5.5rem; }
+.guardar-barra { position: sticky; bottom: 0; background: var(--papel); padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--linea); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.estado-guardado { font-size: 0.9rem; color: var(--suave); }
+.estado-guardado.ok { color: var(--ok); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .dia input[type=text] { width: 100%; }
+  .dia .entrada-linea { flex-direction: column; align-items: stretch; gap: 4px; }
+  .horario .hfila { grid-template-columns: 1fr; gap: 2px; }
+}
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header class="cabeza">
+    <h1><span>Asistencia</span>Faltas, llegadas tarde y extras</h1>
+    <div class="pestanas" role="tablist">
+      <button role="tab" id="tab-procesar" aria-selected="true" aria-controls="vista-procesar">Procesar mes</button>
+      <button role="tab" id="tab-config" aria-selected="false" aria-controls="vista-config">Configuración</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="vista-procesar" role="tabpanel" aria-labelledby="tab-procesar">
+      <section class="bloque">
+        <h2><span class="paso">1</span>Mes y foto</h2>
+        <p class="bajada">Elegí el mes, sacale una foto a la planilla completa y subila.</p>
+        <div class="panel">
+          <div class="fila-campos">
+            <label class="campo">Mes<input type="month" id="mes"></label>
+            <label class="campo">Calcular hasta el día<input type="number" id="corte" min="1" max="31" inputmode="numeric" style="width:7rem"></label>
+          </div>
+          <div id="retomar" class="aviso oculto"></div>
+          <div id="zona-foto">
+            <div class="acciones">
+              <label class="btn sec" for="foto" style="display:inline-flex;align-items:center">Elegir foto</label>
+              <input type="file" id="foto" accept="image/jpeg,image/png,image/webp" class="sr">
+              <button class="btn" id="btn-leer" disabled>Leer la planilla</button>
+            </div>
+            <img id="previa" class="foto-previa oculto" alt="Foto elegida de la planilla">
+          </div>
+          <div id="sin-lectura" class="aviso oculto">Para leer fotos, cargá la API key en <button class="btn sec chico" id="ir-config">Configuración</button>. Mientras tanto podés completar la grilla a mano.</div>
+          <div class="acciones"><button class="btn sec chico" id="btn-manual">Completar a mano, sin foto</button></div>
+          <div id="progreso" class="progreso oculto" aria-live="polite">
+            <span class="puntos" id="progreso-texto">Leyendo la planilla…</span>
+            <button class="btn sec chico" id="btn-parar">Parar</button>
+          </div>
+          <div id="mensaje-lectura" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="bloque oculto" id="bloque-revision">
+        <h2><span class="paso">2</span>Revisar lo leído</h2>
+        <p class="bajada">Corregí cualquier celda. Formato: <strong>08:00-16:00</strong>, o un código como NO VINO, MEDICO u OFICINA. Vacía cuenta como falta.</p>
+        <div class="barra-revision">
+          <p id="pendientes"></p>
+          <button class="btn sec chico" id="btn-siguiente">Ir a la siguiente para revisar</button>
+        </div>
+        <div class="personas" id="personas" role="group" aria-label="Persona"></div>
+        <ul class="dias" id="dias"></ul>
+      </section>
+
+      <section class="bloque oculto" id="bloque-resultado">
+        <h2><span class="paso">3</span>Resultado</h2>
+        <p class="bajada" id="resultado-bajada"></p>
+        <div class="tabla-scroll"><table class="resumen" id="tabla-resumen"></table></div>
+        <div id="aviso-descarga"></div>
+        <div class="acciones">
+          <button class="btn" id="btn-excel">Descargar Excel</button>
+          <span class="estado-guardado" id="estado-mes"></span>
+        </div>
+      </section>
+    </div>
+
+    <div id="vista-config" role="tabpanel" aria-labelledby="tab-config" class="oculto">
+      <section class="bloque">
+        <h2>Personas y horarios</h2>
+        <p class="bajada">Horario fijo: se controla hora de entrada y salida. Horario rotativo: se controla la cantidad de horas del día.</p>
+        <div id="lista-personas"></div>
+        <div class="acciones"><button class="btn sec" id="btn-agregar">Agregar persona</button></div>
+      </section>
+      <section class="bloque">
+        <h2>Reglas generales</h2>
+        <div class="panel" style="display:grid;gap:14px">
+          <label class="campo">Tolerancia de llegada tarde (minutos)<input type="number" id="cfg-tol" min="0" inputmode="numeric" style="width:7rem"></label>
+          <label class="campo">Códigos que cuentan como falta (separados por coma)<input type="text" id="cfg-faltas"></label>
+          <label class="campo">Códigos que se anotan como observación, sin cálculo<input type="text" id="cfg-obs"></label>
+          <p class="bajada" style="margin:0">Un código que no esté en ninguna lista se anota como observación y te lo marco para que lo agregues.</p>
+        </div>
+      </section>
+      <section class="bloque">
+        <h2>Conexión con Claude</h2>
+        <p class="bajada">La API key queda guardada solo en este navegador, no dentro del archivo. Usá una key creada solo para esta planilla, con límite de gasto.</p>
+        <div class="panel" style="display:grid;gap:14px">
+          <label class="campo">API key
+            <span style="display:flex;gap:8px;flex-wrap:wrap">
+              <input type="password" id="cfg-clave" autocomplete="off" spellcheck="false" placeholder="sk-ant-..." style="flex:1;min-width:14rem">
+              <button class="btn sec chico" id="btn-ver-clave" type="button">Mostrar</button>
+            </span>
+          </label>
+          <label class="campo">Modelo
+            <select id="cfg-modelo">
+              <option value="claude-opus-5-5">Claude Opus 5.5 (más preciso)</option>
+              <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (más rápido)</option>
+            </select>
+          </label>
+          <div class="acciones" style="margin-top:0">
+            <button class="btn sec chico" id="btn-probar" type="button">Probar conexión</button>
+            <span class="estado-guardado" id="estado-api" aria-live="polite"></span>
+          </div>
+        </div>
+      </section>
+      <section class="bloque">
+        <h2>Pasar la configuración a otro equipo</h2>
+        <p class="bajada">Exporta personas, horarios y reglas en un archivo. La API key no se incluye.</p>
+        <div class="acciones" style="margin-top:0">
+          <button class="btn sec chico" id="btn-exportar" type="button">Exportar configuración</button>
+          <label class="btn sec chico" for="importar" style="display:inline-flex;align-items:center">Importar configuración</label>
+          <input type="file" id="importar" accept="application/json,.json" class="sr">
+        </div>
+      </section>
+      <div class="guardar-barra">
+        <button class="btn" id="btn-guardar">Guardar configuración</button>
+        <span class="estado-guardado" id="estado-config" aria-live="polite"></span>
+      </div>
+    </div>
+  </main>
+</div>
+<script>
+// ===== Núcleo: parseo, cálculo y Excel =====
+const DIAS_CORTOS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+const DIAS_LARGOS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'setiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function normTxt(s) {
+  return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().replace(/\s+/g, ' ').trim();
+}
+function pad2(n) { return String(n).padStart(2, '0'); }
+function minToHHMM(m) { return pad2(Math.floor(m / 60)) + ':' + pad2(m % 60); }
+function hhmmToMin(s) {
+  const m = String(s || '').match(/^(\d{1,2}):(\d{2})$/);
+  return m ? (+m[1]) * 60 + (+m[2]) : null;
+}
+function fmtDur(min) {
+  if (!min) return '—';
+  const h = Math.floor(min / 60), m = min % 60;
+  if (!h) return m + ' min';
+  if (!m) return h + ' h';
+  return h + ' h ' + m + ' min';
+}
+function diasEnMes(anio, mes) { return new Date(anio, mes, 0).getDate(); } // mes 1-12
+function isoFecha(anio, mes, dia) { return anio + '-' + pad2(mes) + '-' + pad2(dia); }
+
+function parseHora(tok) {
+  tok = String(tok).trim().replace('.', ':');
+  let h, mi, m;
+  if ((m = tok.match(/^(\d{1,2}):(\d{2})$/))) { h = +m[1]; mi = +m[2]; }
+  else if (/^\d{1,4}$/.test(tok)) {
+    if (tok.length <= 2) { h = +tok; mi = 0; }
+    else if (tok.length === 3) { h = +tok[0]; mi = +tok.slice(1); }
+    else { h = +tok.slice(0, 2); mi = +tok.slice(2); }
+  } else return null;
+  if (h > 23 || mi > 59) return null;
+  return h * 60 + mi;
+}
+
+// Interpreta el texto de una celda
+function parseValor(raw) {
+  let s = String(raw == null ? '' : raw).trim();
+  s = s.replace(/\([^)]*\)/g, ' ').trim(); // horas entre paréntesis: se ignoran
+  if (!s) return { tipo: 'vacio' };
+  const T = '(\\d{1,2}(?:[:.]\\d{2})?|\\d{3,4})';
+  const re = new RegExp('^' + T + '\\s*(?:a|al|hasta|-|–|—)\\s*' + T + '$', 'i');
+  const m = s.match(re);
+  if (m) {
+    const e = parseHora(m[1]), sa = parseHora(m[2]);
+    if (e == null || sa == null) return { tipo: 'invalido', motivo: 'Hay una hora imposible' };
+    if (sa <= e) return { tipo: 'invalido', motivo: 'La salida no puede ser antes que la entrada' };
+    return { tipo: 'rango', e, s: sa };
+  }
+  if (/\d/.test(s)) return { tipo: 'invalido', motivo: 'Escribilo como 08:00-16:00' };
+  return { tipo: 'codigo', codigo: normTxt(s) };
+}
+function normalizarValor(raw) {
+  const p = parseValor(raw);
+  if (p.tipo === 'rango') return minToHHMM(p.e) + '-' + minToHHMM(p.s);
+  if (p.tipo === 'codigo') return p.codigo;
+  if (p.tipo === 'vacio') return '';
+  return String(raw).trim();
+}
+
+function activaEn(persona, fecha) {
+  if (persona.alta && fecha < persona.alta) return false;
+  if (persona.baja && fecha > persona.baja) return false;
+  return true;
+}
+
+// Calcula un día de una persona. Devuelve null si ese día no se computa.
+function calcularDia(persona, config, anio, mes, dia, celda) {
+  const fecha = isoFecha(anio, mes, dia);
+  const dow = new Date(anio, mes - 1, dia).getDay();
+  const hor = (persona.horario || {})[dow];
+  if (!hor || !hor.trabaja) return null;
+  if (!activaEn(persona, fecha)) return null;
+  const r = { dia, dow, fecha, valor: celda ? celda.v : '', leido: celda ? celda.leido : '', manual: !!(celda && celda.manual),
+    estado: '', entrada: null, salida: null, trab: 0, tarde: 0, salAnt: 0, falt: 0, extra: 0, obs: '' };
+  const p = parseValor(r.valor);
+  const faltas = (config.codigosFalta || []).map(normTxt);
+  const obsCod = (config.codigosObs || []).map(normTxt);
+  if (p.tipo === 'vacio') { r.estado = 'falta'; r.obs = 'Sin registro'; return r; }
+  if (p.tipo === 'invalido') { r.estado = 'invalido'; r.obs = p.motivo; return r; }
+  if (p.tipo === 'codigo') {
+    if (faltas.includes(p.codigo)) { r.estado = 'falta'; r.obs = p.codigo; return r; }
+    r.estado = 'obs'; r.obs = p.codigo;
+    if (!obsCod.includes(p.codigo)) r.codigoNuevo = true;
+    return r;
+  }
+  r.estado = 'trabajado'; r.entrada = p.e; r.salida = p.s; r.trab = p.s - p.e;
+  if (persona.tipo === 'fijo') {
+    const E = hhmmToMin(hor.entrada), S = hhmmToMin(hor.salida);
+    const tol = +config.tolerancia || 0;
+    let tarde = Math.max(0, p.e - E);
+    if (tarde <= tol) tarde = 0;
+    r.tarde = tarde;
+    r.salAnt = Math.max(0, S - p.s);
+    r.extra = Math.max(0, E - p.e) + Math.max(0, p.s - S);
+  } else {
+    const obj = Math.round((+hor.horas || 0) * 60);
+    const d = r.trab - obj;
+    r.falt = Math.max(0, -d);
+    r.extra = Math.max(0, d);
+  }
+  return r;
+}
+
+function calcularMes(config, anio, mes, corte, datos) {
+  const out = [];
+  const ultimo = Math.min(corte || diasEnMes(anio, mes), diasEnMes(anio, mes));
+  for (const persona of config.personas) {
+    const dias = [];
+    for (let d = 1; d <= ultimo; d++) {
+      const celda = ((datos || {})[persona.id] || {})[d];
+      const r = calcularDia(persona, config, anio, mes, d, celda);
+      if (r) dias.push(r);
+    }
+    if (!dias.length) continue; // no activa este mes
+    const tot = { dias: dias.length, trabajados: 0, faltas: 0, obs: 0, invalidos: 0, tarde: 0, salAnt: 0, falt: 0, extra: 0, trab: 0, llegadasTarde: 0 };
+    for (const r of dias) {
+      if (r.estado === 'trabajado') tot.trabajados++;
+      if (r.estado === 'falta') tot.faltas++;
+      if (r.estado === 'obs') tot.obs++;
+      if (r.estado === 'invalido') tot.invalidos++;
+      tot.tarde += r.tarde; tot.salAnt += r.salAnt; tot.falt += r.falt; tot.extra += r.extra; tot.trab += r.trab;
+      if (r.tarde > 0) tot.llegadasTarde++;
+    }
+    out.push({ persona, dias, tot });
+  }
+  return out;
+}
+
+// Asigna lo leído por Claude (filas por nombre) a personas configuradas
+function asignarLectura(config, anio, mes, lectura) {
+  const datos = {};
+  const ignoradas = new Set();
+  const nDias = diasEnMes(anio, mes);
+  const claves = (p) => [p.nombre].concat(String(p.alias || '').split(',')).map(normTxt).filter(Boolean);
+  const coincide = (fila, p) => {
+    const f = ' ' + normTxt(fila).replace(/[^A-Z0-9 ]/g, ' ') + ' ';
+    return claves(p).some(k => f.includes(' ' + k + ' '));
+  };
+  for (const fila of (lectura.filas || [])) {
+    const celdas = fila.celdas || {};
+    const dudosas = fila.dudosas || {};
+    let asignoAlgo = false;
+    for (const k of Object.keys(celdas)) {
+      const d = parseInt(k, 10);
+      if (!(d >= 1 && d <= nDias)) continue;
+      const fecha = isoFecha(anio, mes, d);
+      // exacta primero: nombre principal; luego alias
+      let persona = config.personas.find(p => normTxt(p.nombre) && coincide(fila.nombre, { nombre: p.nombre }) && activaEn(p, fecha))
+        || config.personas.find(p => coincide(fila.nombre, p) && activaEn(p, fecha));
+      if (!persona) continue;
+      asignoAlgo = true;
+      const v = normalizarValor(celdas[k]);
+      datos[persona.id] = datos[persona.id] || {};
+      const previo = datos[persona.id][d];
+      if (previo && previo.v && !v) continue; // no pisar un dato con una celda vacía
+      datos[persona.id][d] = { v, leido: v, dudosa: dudosas[k] ? String(dudosas[k]) : '', manual: false };
+    }
+    if (!asignoAlgo) ignoradas.add(String(fila.nombre || '?'));
+  }
+  return { datos, ignoradas: [...ignoradas] };
+}
+
+// ===== Excel (ExcelJS) =====
+const XL = {
+  tinta: 'FF1F3A93', rojo: 'FFB42318', rojoFondo: 'FFFDE8E6', amarillo: 'FFFFF1B8', gris: 'FF5B6475',
+  linea: 'FFD5DBE5', cabecera: 'FFE9EEF8', blanco: 'FFFFFFFF'
+};
+function nombreHoja(s) { return String(s).replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 31); }
+
+async function construirExcel(ExcelJS, resultado, anio, mes, corte) {
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Planilla de asistencia';
+  const titulo = 'Asistencia ' + MESES[mes - 1] + ' ' + anio;
+  const ultimo = diasEnMes(anio, mes);
+  const sub = (corte && corte < ultimo) ? 'Calculado del 1 al ' + corte : 'Mes completo';
+  const borde = { top: { style: 'thin', color: { argb: XL.linea } }, bottom: { style: 'thin', color: { argb: XL.linea } } };
+  const fill = (argb) => ({ type: 'pattern', pattern: 'solid', fgColor: { argb } });
+
+  // --- Resumen ---
+  const ws = wb.addWorksheet('Resumen', { views: [{ state: 'frozen', xSplit: 1, ySplit: 3, zoomScale: 120 }] });
+  ws.getCell('A1').value = titulo;
+  ws.getCell('A1').font = { size: 16, bold: true, color: { argb: XL.tinta } };
+  ws.getCell('A2').value = sub;
+  ws.getCell('A2').font = { size: 11, color: { argb: XL.gris } };
+  const cab = ['Persona', 'Días a trabajar', 'Trabajados', 'Faltas', 'Con observ.', 'Llegadas tarde', 'Min. tarde', 'Salida antic.', 'Faltante', 'Extra'];
+  const rowCab = ws.getRow(3);
+  cab.forEach((c, i) => {
+    const cell = rowCab.getCell(i + 1);
+    cell.value = c; cell.font = { bold: true, size: 11 }; cell.fill = fill(XL.cabecera);
+    cell.alignment = { vertical: 'middle', horizontal: i ? 'center' : 'left', wrapText: true };
+  });
+  rowCab.height = 32;
+  resultado.forEach((r, idx) => {
+    const t = r.tot, fijo = r.persona.tipo === 'fijo';
+    const row = ws.getRow(4 + idx);
+    const vals = [r.persona.nombre, t.dias, t.trabajados, t.faltas, t.obs,
+      fijo ? t.llegadasTarde : 'no aplica', fijo ? fmtDur(t.tarde) : 'no aplica', fijo ? fmtDur(t.salAnt) : 'no aplica',
+      fijo ? 'no aplica' : fmtDur(t.falt), fmtDur(t.extra)];
+    vals.forEach((v, i) => {
+      const cell = row.getCell(i + 1);
+      cell.value = v; cell.border = borde;
+      cell.font = { size: 12, bold: i === 0, color: { argb: v === 'no aplica' ? XL.gris : 'FF1A1F2B' } };
+      cell.alignment = { vertical: 'middle', horizontal: i ? 'center' : 'left' };
+    });
+    if (t.faltas > 0) { row.getCell(4).fill = fill(XL.rojoFondo); row.getCell(4).font = { size: 12, bold: true, color: { argb: XL.rojo } }; }
+    if (t.obs > 0) row.getCell(5).fill = fill(XL.amarillo);
+    row.height = 24;
+  });
+  ws.getRow(4 + resultado.length + 1).getCell(1).value = 'Cada persona tiene su hoja con el detalle día por día.';
+  ws.getRow(4 + resultado.length + 1).getCell(1).font = { italic: true, size: 10, color: { argb: XL.gris } };
+  ws.getColumn(1).width = 16;
+  for (let i = 2; i <= cab.length; i++) ws.getColumn(i).width = 13;
+
+  // --- Una hoja por persona ---
+  const usados = new Set(['Resumen']);
+  for (const r of resultado) {
+    const fijo = r.persona.tipo === 'fijo';
+    let nom = nombreHoja(r.persona.nombre); let k = 2;
+    while (usados.has(nom)) nom = nombreHoja(r.persona.nombre + ' ' + (k++));
+    usados.add(nom);
+    const sh = wb.addWorksheet(nom, { views: [{ state: 'frozen', xSplit: 1, ySplit: 4, zoomScale: 120 }] });
+    sh.getCell('A1').value = r.persona.nombre + (r.persona.rol ? ' (' + r.persona.rol + ')' : '');
+    sh.getCell('A1').font = { size: 15, bold: true, color: { argb: XL.tinta } };
+    sh.getCell('A2').value = titulo + '. ' + describirHorario(r.persona);
+    sh.getCell('A2').font = { size: 10, color: { argb: XL.gris } };
+    const cols = fijo
+      ? ['Día', 'Registro', 'Horas', 'Tarde', 'Salida antic.', 'Extra', 'Observación']
+      : ['Día', 'Registro', 'Horas', 'Faltante', 'Extra', 'Observación'];
+    const hr = sh.getRow(4);
+    cols.forEach((c, i) => {
+      const cell = hr.getCell(i + 1);
+      cell.value = c; cell.font = { bold: true, size: 11 }; cell.fill = fill(XL.cabecera);
+      cell.alignment = { vertical: 'middle', horizontal: i === 0 || i === cols.length - 1 ? 'left' : 'center' };
+    });
+    hr.height = 22;
+    let fila = 5;
+    for (const d of r.dias) {
+      const row = sh.getRow(fila++);
+      const reg = d.estado === 'trabajado' ? minToHHMM(d.entrada) + ' a ' + minToHHMM(d.salida)
+        : d.estado === 'falta' ? 'FALTA' : (d.valor || '');
+      let obs = d.estado === 'falta' ? (d.obs === 'Sin registro' ? 'Sin registro' : 'Anotado: ' + d.obs)
+        : d.estado === 'obs' ? d.obs : '';
+      if (d.manual) obs = (obs ? obs + '. ' : '') + 'Corregido a mano' + (d.leido ? ' (se leyó "' + d.leido + '")' : ' (vacío en la lectura)');
+      const horas = d.estado === 'trabajado' ? fmtDur(d.trab) : '';
+      const vals = fijo
+        ? [DIAS_CORTOS[d.dow] + ' ' + d.dia, reg, horas, d.tarde ? fmtDur(d.tarde) : '', d.salAnt ? fmtDur(d.salAnt) : '', d.extra ? fmtDur(d.extra) : '', obs]
+        : [DIAS_CORTOS[d.dow] + ' ' + d.dia, reg, horas, d.falt ? fmtDur(d.falt) : '', d.extra ? fmtDur(d.extra) : '', obs];
+      vals.forEach((v, i) => {
+        const cell = row.getCell(i + 1);
+        cell.value = v; cell.border = borde; cell.font = { size: 12 };
+        cell.alignment = { vertical: 'middle', horizontal: i === 0 || i === vals.length - 1 ? 'left' : 'center', wrapText: i === vals.length - 1 };
+      });
+      row.getCell(1).font = { size: 12, bold: true };
+      if (d.estado === 'falta') {
+        for (let i = 1; i <= vals.length; i++) row.getCell(i).fill = fill(XL.rojoFondo);
+        row.getCell(2).font = { size: 12, bold: true, color: { argb: XL.rojo } };
+      } else if (d.estado === 'obs') {
+        for (let i = 1; i <= vals.length; i++) row.getCell(i).fill = fill(XL.amarillo);
+      }
+      if (fijo) {
+        if (d.tarde) row.getCell(4).font = { size: 12, bold: true, color: { argb: XL.rojo } };
+        if (d.salAnt) row.getCell(5).font = { size: 12, bold: true, color: { argb: XL.rojo } };
+      } else if (d.falt) row.getCell(4).font = { size: 12, bold: true, color: { argb: XL.rojo } };
+      row.height = 22;
+    }
+    // Totales
+    const t = r.tot;
+    const tr = sh.getRow(fila + 1);
+    const tv = fijo
+      ? ['Total', t.faltas + (t.faltas === 1 ? ' falta' : ' faltas'), fmtDur(t.trab), fmtDur(t.tarde), fmtDur(t.salAnt), fmtDur(t.extra), t.obs ? t.obs + ' con observación' : '']
+      : ['Total', t.faltas + (t.faltas === 1 ? ' falta' : ' faltas'), fmtDur(t.trab), fmtDur(t.falt), fmtDur(t.extra), t.obs ? t.obs + ' con observación' : ''];
+    tv.forEach((v, i) => {
+      const cell = tr.getCell(i + 1);
+      cell.value = v; cell.font = { size: 12, bold: true };
+      cell.fill = fill(XL.cabecera);
+      cell.alignment = { vertical: 'middle', horizontal: i === 0 || i === tv.length - 1 ? 'left' : 'center' };
+    });
+    tr.height = 24;
+    sh.getColumn(1).width = 9;
+    sh.getColumn(2).width = 17;
+    for (let i = 3; i < cols.length; i++) sh.getColumn(i).width = 12;
+    sh.getColumn(cols.length).width = 34;
+  }
+  return wb.xlsx.writeBuffer();
+}
+
+function describirHorario(p) {
+  const h = p.horario || {};
+  const partes = [];
+  const nombres = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+  const clave = (d) => !h[d] || !h[d].trabaja ? null : (p.tipo === 'fijo' ? h[d].entrada + ' a ' + h[d].salida : (+h[d].horas) + ' h');
+  let i = 1;
+  const orden = [1, 2, 3, 4, 5, 6, 0];
+  while (i <= 7) {
+    const d = orden[i - 1], k = clave(d);
+    if (!k) { i++; continue; }
+    let j = i;
+    while (j < 7 && clave(orden[j]) === k) j++;
+    partes.push((j > i ? nombres[d] + ' a ' + nombres[orden[j - 1]] : nombres[d]) + ' ' + k);
+    i = j + 1;
+  }
+  return 'Horario: ' + (partes.join(', ') || 'sin días configurados') + '.';
+}
+
+
+// ===== Aplicación =====
+const $ = (id) => document.getElementById(id);
+function el(tag, attrs, ...hijos) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v === true ? '' : v);
+  }
+  for (const h of hijos.flat()) if (h != null && h !== false) n.append(h.nodeType ? h : document.createTextNode(String(h)));
+  return n;
+}
+function uid() { return 'p' + Math.random().toString(36).slice(2, 9); }
+
+function horarioBase(tipo, a, b) {
+  const h = {};
+  for (let d = 0; d < 7; d++) h[d] = { trabaja: d !== 0, entrada: tipo === 'fijo' ? a : '08:00', salida: tipo === 'fijo' ? b : '16:00', horas: tipo === 'fijo' ? 8 : a };
+  return h;
+}
+function configInicial() {
+  return {
+    version: 1, tolerancia: 0,
+    codigosFalta: ['NO VINO', 'NO', 'FALTA', 'FALTO'],
+    codigosObs: ['MEDICO', 'OFICINA'],
+    personas: [
+      { id: 'karen', nombre: 'Karen', rol: 'Facilitadora', alias: '', tipo: 'fijo', alta: '', baja: '', horario: horarioBase('fijo', '08:00', '16:00') },
+      { id: 'juan', nombre: 'Juan', rol: 'Facilitador', alias: '', tipo: 'fijo', alta: '', baja: '2026-09-20', horario: horarioBase('fijo', '12:00', '20:00') },
+      { id: 'ramos', nombre: 'Ramos', rol: 'Facilitador', alias: 'Juan', tipo: 'fijo', alta: '2026-09-21', baja: '', horario: horarioBase('fijo', '12:00', '20:00') },
+      { id: 'micaela', nombre: 'Micaela', rol: 'A/Social', alias: '', tipo: 'rotativo', alta: '', baja: '', horario: horarioBase('rotativo', 6) },
+      { id: 'eugenia', nombre: 'Eugenia', rol: 'Educadora', alias: '', tipo: 'rotativo', alta: '', baja: '', horario: horarioBase('rotativo', 4) },
+    ]
+  };
+}
+
+// ---- Estado ----
+const E = {
+  config: configInicial(), configBorrador: null,
+  anio: 0, mes: 0, corte: 0, datos: null, fuente: 'foto', personaSel: null,
+  foto: null, db: null, ctl: null, api: { clave: '', modelo: 'claude-opus-5-5' },
+};
+
+// ---- Almacenamiento (db del artifact, con respaldo local) ----
+const LS = {
+  get(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
+};
+async function leerDoc(ruta) {
+  if (E.db) {
+    try { const s = await E.db.doc(ruta).get(); if (s.exists) { const d = s.data(); return d && d.json ? JSON.parse(d.json) : null; } return null; }
+    catch (e) { /* cae al respaldo local */ }
+  }
+  return LS.get('asis:' + ruta);
+}
+let colaEscritura = Promise.resolve();
+function escribirDoc(ruta, obj) {
+  LS.set('asis:' + ruta, obj);
+  return Promise.resolve('local');
+  colaEscritura = colaEscritura.then(() => E.db.doc(ruta).set({ json: JSON.stringify(obj), actualizado: new Date().toISOString() }))
+    .then(() => 'nube', (e) => { console.warn('db', e); return 'local'; });
+  return colaEscritura;
+}
+const claveMes = () => 'meses/m' + E.anio + '-' + pad2(E.mes);
+
+// ---- Pestañas ----
+function mostrarVista(cual) {
+  const proc = cual === 'procesar';
+  $('tab-procesar').setAttribute('aria-selected', proc);
+  $('tab-config').setAttribute('aria-selected', !proc);
+  $('vista-procesar').classList.toggle('oculto', !proc);
+  $('vista-config').classList.toggle('oculto', proc);
+  if (!proc) { E.configBorrador = JSON.parse(JSON.stringify(E.config)); pintarConfig(); }
+  else if (E.datos) { pintarRevision(); pintarResultado(); }
+}
+$('tab-procesar').onclick = () => mostrarVista('procesar');
+$('tab-config').onclick = () => mostrarVista('config');
+
+// ================== CONFIGURACIÓN ==================
+function pintarConfig() {
+  const c = E.configBorrador;
+  $('cfg-tol').value = c.tolerancia || 0;
+  $('cfg-faltas').value = (c.codigosFalta || []).join(', ');
+  $('cfg-obs').value = (c.codigosObs || []).join(', ');
+  $('cfg-clave').value = E.api.clave || '';
+  $('cfg-modelo').value = E.api.modelo || 'claude-opus-5-5';
+  const cont = $('lista-personas');
+  cont.replaceChildren(...c.personas.map((p) => tarjetaPersona(p)));
+  $('estado-config').textContent = '';
+  $('estado-config').className = 'estado-guardado';
+}
+function marcarSinGuardar() { $('estado-config').textContent = 'Hay cambios sin guardar'; $('estado-config').className = 'estado-guardado'; }
+
+function tarjetaPersona(p) {
+  const det = el('details', { class: 'persona' });
+  const resumenTxt = () => (p.tipo === 'fijo' ? 'Fijo. ' : 'Rotativo. ') + describirHorario(p).replace('Horario: ', '')
+    + (p.baja ? ' Baja ' + p.baja.split('-').reverse().join('/') + '.' : '') + (p.alta ? ' Alta ' + p.alta.split('-').reverse().join('/') + '.' : '');
+  const sumNombre = el('strong', { text: p.nombre || 'Sin nombre' });
+  const sumDet = el('span', { text: resumenTxt() });
+  det.append(el('summary', {}, sumNombre, sumDet));
+  const refrescar = () => { sumNombre.textContent = p.nombre || 'Sin nombre'; sumDet.textContent = resumenTxt(); marcarSinGuardar(); };
+
+  const campo = (etq, input) => el('label', { class: 'campo' }, etq, input);
+  const inp = (key, extra) => { const i = el('input', Object.assign({ type: 'text', value: p[key] || '' }, extra || {})); i.oninput = () => { p[key] = i.value.trim(); refrescar(); }; return i; };
+
+  const cuerpo = el('div', { class: 'persona-cuerpo' });
+  cuerpo.append(el('div', { class: 'fila-campos' },
+    campo('Nombre', inp('nombre')), campo('Cargo', inp('rol')),
+  ));
+  cuerpo.append(campo('Otros nombres con que aparece en la planilla (separados por coma)', inp('alias', { placeholder: 'Ej.: Juan' })));
+
+  const tipos = el('div', { class: 'tipo-opciones', role: 'radiogroup', 'aria-label': 'Tipo de horario' });
+  const grupo = 'tipo-' + p.id;
+  for (const [val, etq] of [['fijo', 'Horario fijo'], ['rotativo', 'Horario rotativo (horas por día)']]) {
+    const r = el('input', { type: 'radio', name: grupo, value: val });
+    r.checked = p.tipo === val;
+    r.onchange = () => { p.tipo = val; pintarHorario(); refrescar(); };
+    tipos.append(el('label', {}, r, etq));
+  }
+  cuerpo.append(tipos);
+
+  cuerpo.append(el('div', { class: 'fila-campos' },
+    campo('Fecha de alta', inp('alta', { type: 'date' })),
+    campo('Fecha de baja', inp('baja', { type: 'date' })),
+  ));
+
+  const hor = el('div', { class: 'horario' });
+  const orden = [1, 2, 3, 4, 5, 6, 0];
+  function pintarHorario() {
+    hor.replaceChildren();
+    for (const d of orden) {
+      const h = p.horario[d] = p.horario[d] || { trabaja: false, entrada: '08:00', salida: '16:00', horas: 6 };
+      const chk = el('input', { type: 'checkbox' }); chk.checked = !!h.trabaja;
+      const vals = el('div', { class: 'hvals' });
+      const pintarVals = () => {
+        vals.replaceChildren();
+        if (!h.trabaja) { vals.append('No trabaja'); return; }
+        if (p.tipo === 'fijo') {
+          const a = el('input', { type: 'time', value: h.entrada, 'aria-label': DIAS_LARGOS[d] + ' entrada' });
+          const b = el('input', { type: 'time', value: h.salida, 'aria-label': DIAS_LARGOS[d] + ' salida' });
+          a.onchange = () => { h.entrada = a.value; refrescar(); };
+          b.onchange = () => { h.salida = b.value; refrescar(); };
+          vals.append(a, 'a', b);
+        } else {
+          const n = el('input', { type: 'number', min: '0', max: '24', step: '0.5', value: h.horas, inputmode: 'decimal', 'aria-label': DIAS_LARGOS[d] + ' horas' });
+          n.oninput = () => { h.horas = parseFloat(n.value) || 0; refrescar(); };
+          vals.append(n, 'horas');
+        }
+      };
+      chk.onchange = () => { h.trabaja = chk.checked; pintarVals(); refrescar(); };
+      pintarVals();
+      hor.append(el('div', { class: 'hfila' }, el('label', { class: 'dia-chk' }, chk, DIAS_LARGOS[d]), vals));
+    }
+  }
+  pintarHorario();
+  cuerpo.append(el('div', {}, el('div', { class: 'campo', style: 'margin-bottom:6px' }, 'Horario por día'), hor));
+
+  cuerpo.append(el('div', { class: 'acciones', style: 'margin-top:0' },
+    el('button', { class: 'btn sec chico', onclick: () => {
+      const base = p.horario[1];
+      for (const d of [2, 3, 4, 5, 6]) p.horario[d] = Object.assign({}, base);
+      pintarHorario(); refrescar();
+    } }, 'Copiar el lunes de martes a sábado'),
+    el('button', { class: 'btn peligro chico', onclick: () => {
+      if (!confirm('¿Quitar a ' + (p.nombre || 'esta persona') + '? Si solo dejó de trabajar, conviene poner fecha de baja para conservar los meses anteriores.')) return;
+      E.configBorrador.personas = E.configBorrador.personas.filter(x => x !== p);
+      pintarConfig(); marcarSinGuardar();
+    } }, 'Quitar persona'),
+  ));
+  det.append(cuerpo);
+  return det;
+}
+$('btn-agregar').onclick = () => {
+  const p = { id: uid(), nombre: '', rol: '', alias: '', tipo: 'fijo', alta: '', baja: '', horario: horarioBase('fijo', '08:00', '16:00') };
+  E.configBorrador.personas.push(p);
+  const t = tarjetaPersona(p); t.open = true;
+  $('lista-personas').append(t);
+  t.querySelector('input').focus();
+  marcarSinGuardar();
+};
+for (const id of ['cfg-tol', 'cfg-faltas', 'cfg-obs', 'cfg-clave', 'cfg-modelo']) $(id).addEventListener('input', marcarSinGuardar);
+$('btn-guardar').onclick = async () => {
+  const c = E.configBorrador;
+  c.tolerancia = Math.max(0, parseInt($('cfg-tol').value, 10) || 0);
+  const lista = (s) => s.split(',').map(normTxt).filter(Boolean);
+  c.codigosFalta = lista($('cfg-faltas').value);
+  c.codigosObs = lista($('cfg-obs').value);
+  const sinNombre = c.personas.find(p => !p.nombre);
+  if (sinNombre) { $('estado-config').textContent = 'Falta el nombre de una persona.'; $('estado-config').className = 'estado-guardado'; return; }
+  for (const p of c.personas) for (const d of Object.keys(p.horario)) {
+    const h = p.horario[d];
+    if (p.tipo === 'fijo' && h.trabaja && !(hhmmToMin(h.salida) > hhmmToMin(h.entrada))) {
+      $('estado-config').textContent = p.nombre + ': en ' + DIAS_LARGOS[d] + ' la salida tiene que ser después de la entrada.'; return;
+    }
+  }
+  E.config = JSON.parse(JSON.stringify(c));
+  E.api = { clave: $('cfg-clave').value.trim(), modelo: $('cfg-modelo').value };
+  LS.set('asis:api', E.api);
+  actualizarLectura();
+  $('btn-guardar').disabled = true;
+  const donde = await escribirDoc('config/principal', E.config);
+  $('btn-guardar').disabled = false;
+  $('estado-config').textContent = 'Configuración guardada en este navegador';
+  $('estado-config').className = 'estado-guardado ok';
+};
+
+// ================== PROCESAR MES ==================
+function fijarMes(anio, mes) {
+  E.anio = anio; E.mes = mes; E.corte = diasEnMes(anio, mes);
+  $('mes').value = anio + '-' + pad2(mes);
+  $('corte').max = E.corte; $('corte').value = E.corte;
+  E.datos = null;
+  $('bloque-revision').classList.add('oculto');
+  $('bloque-resultado').classList.add('oculto');
+  $('mensaje-lectura').replaceChildren();
+  buscarGuardado();
+}
+$('mes').onchange = () => {
+  const m = $('mes').value.match(/^(\d{4})-(\d{2})$/);
+  if (m) fijarMes(+m[1], +m[2]);
+};
+$('corte').oninput = () => {
+  const v = parseInt($('corte').value, 10);
+  if (v >= 1 && v <= diasEnMes(E.anio, E.mes)) { E.corte = v; if (E.datos) { pintarRevision(); pintarResultado(); guardarMesPronto(); } }
+};
+
+async function buscarGuardado() {
+  const caja = $('retomar');
+  caja.classList.add('oculto');
+  const g = await leerDoc(claveMes());
+  if (!g || !g.datos) return;
+  caja.replaceChildren(
+    'Ya hay una revisión guardada de ' + MESES[E.mes - 1] + ' ' + E.anio + (g.actualizado ? ' (' + new Date(g.actualizado).toLocaleString('es-UY', { dateStyle: 'short', timeStyle: 'short' }) + ')' : '') + '. ',
+    el('button', { class: 'btn chico', style: 'margin-left:6px', onclick: () => {
+      E.datos = g.datos; E.fuente = g.fuente || 'foto'; E.corte = g.corte || E.corte; $('corte').value = E.corte;
+      caja.classList.add('oculto'); abrirRevision();
+    } }, 'Retomar'));
+  caja.classList.remove('oculto');
+}
+
+$('foto').onchange = () => {
+  const f = $('foto').files[0];
+  if (!f) return;
+  E.foto = f;
+  const url = URL.createObjectURL(f);
+  $('previa').src = url; $('previa').classList.remove('oculto');
+  actualizarLectura();
+};
+
+$('btn-manual').onclick = () => {
+  if (E.datos && !confirm('Ya hay datos cargados para este mes. ¿Empezar una grilla vacía?')) return;
+  E.datos = {}; E.fuente = 'manual';
+  abrirRevision();
+  guardarMesPronto();
+};
+
+function abrirRevision() {
+  const activos = personasDelMes();
+  if (!E.personaSel || !activos.find(p => p.id === E.personaSel)) E.personaSel = activos[0] ? activos[0].id : null;
+  $('bloque-revision').classList.remove('oculto');
+  $('bloque-resultado').classList.remove('oculto');
+  pintarRevision(); pintarResultado();
+  $('bloque-revision').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}
+function personasDelMes() {
+  const ini = isoFecha(E.anio, E.mes, 1), fin = isoFecha(E.anio, E.mes, diasEnMes(E.anio, E.mes));
+  return E.config.personas.filter(p => !(p.alta && p.alta > fin) && !(p.baja && p.baja < ini));
+}
+
+// ---- Lectura con Claude ----
+function escalaNativa(w, h) {
+  let s = Math.min(1, 2576 / Math.max(w, h));
+  while (Math.ceil(w * s / 28) * Math.ceil(h * s / 28) > 4784) s *= 0.98;
+  return s;
+}
+async function prepararImagenes(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch (e) { bmp = await createImageBitmap(file); }
+  const W = bmp.width, H = bmp.height;
+  const recorte = (sx, sy, sw, sh) => {
+    const esc = escalaNativa(sw, sh);
+    const c = document.createElement('canvas');
+    c.width = Math.round(sw * esc); c.height = Math.round(sh * esc);
+    c.getContext('2d').drawImage(bmp, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    return new Promise(r => c.toBlob(r, 'image/jpeg', 0.92));
+  };
+  const imgs = [await recorte(0, 0, W, H)];
+  // Franjas ampliadas solo si la foto es tan grande que la hoja completa se achica
+  const sFull = escalaNativa(W, H);
+  const n = 3, alto = H / n, solape = H * 0.06;
+  const sFranja = escalaNativa(W, Math.round(alto + 2 * solape));
+  let franjas = 0;
+  if (sFranja > sFull * 1.15) {
+    for (let i = 0; i < n; i++) {
+      const y0 = Math.max(0, Math.round(i * alto - solape)), y1 = Math.min(H, Math.round((i + 1) * alto + solape));
+      imgs.push(await recorte(0, y0, W, y1 - y0));
+    }
+    franjas = n;
+  }
+  return { imgs, franjas };
+}
+function blobABase64(b) {
+  return new Promise((ok, mal) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = mal; r.readAsDataURL(b); });
+}
+async function llamarClaude(contenido, maxTokens, signal) {
+  let r;
+  try {
+    r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', signal,
+      headers: { 'content-type': 'application/json', 'x-api-key': E.api.clave, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: E.api.modelo, max_tokens: maxTokens, messages: [{ role: 'user', content: contenido }] }),
+    });
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw { code: 'cancelled' };
+    throw { code: 'red' };
+  }
+  let data = null; try { data = await r.json(); } catch (e) { }
+  if (!r.ok) throw { code: 'http', status: r.status, msg: (data && data.error && data.error.message) || '' };
+  const texto = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  return { texto, cortado: data.stop_reason === 'max_tokens' };
+}
+function parsearJSON(t) {
+  let s = String(t || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  try { return JSON.parse(s); } catch (e) { }
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if (i >= 0 && j > i) { try { return JSON.parse(s.slice(i, j + 1)); } catch (e) { } }
+  return null;
+}
+function mensajeError(e) {
+  if (!e) return 'No se pudo completar la lectura. Probá de nuevo.';
+  if (e.code === 'red') return 'No hay conexión con la API de Claude. Revisá internet y probá de nuevo.';
+  if (e.code === 'json') return 'La lectura llegó incompleta. Tocá "Leer la planilla" para intentar de nuevo.';
+  if (e.code === 'http') {
+    const m = (e.msg || '').toLowerCase();
+    if (e.status === 401) return 'La API key no es válida o fue revocada. Revisala en Configuración.';
+    if (e.status === 403) return 'Esta API key no tiene permiso para usar Claude. Revisala en la consola de Claude.';
+    if (m.includes('credit')) return 'La cuenta de la API no tiene saldo. Hay que cargar crédito en la consola de Claude.';
+    if (e.status === 404) return 'El modelo elegido no está disponible para esta key. Probá con el otro modelo en Configuración.';
+    if (e.status === 413) return 'La foto es demasiado pesada. Probá con otra foto.';
+    if (e.status === 429) return 'Se alcanzó el límite de uso de la API. Probá de nuevo en unos minutos.';
+    if (e.status >= 500) return 'Claude está saturado en este momento. Probá de nuevo en unos minutos.';
+    return 'La API respondió con un error (' + e.status + (e.msg ? ': ' + e.msg : '') + ').';
+  }
+  return 'No se pudo completar la lectura. Probá de nuevo.';
+}
+function actualizarLectura() {
+  const hayClave = !!E.api.clave;
+  $('sin-lectura').classList.toggle('oculto', hayClave);
+  $('btn-leer').disabled = !(hayClave && E.foto);
+}
+function armarPrompt(franjas) {
+  const nDias = diasEnMes(E.anio, E.mes);
+  const nombres = personasDelMes().flatMap(p => [p.nombre].concat(String(p.alias || '').split(',').map(s => s.trim()))).filter(Boolean);
+  return [
+    'Transcribí esta planilla manuscrita de asistencia de personal. Es del mes de ' + MESES[E.mes - 1] + ' de ' + E.anio + ' (' + nDias + ' días).',
+    '',
+    'Qué te paso:',
+    franjas ? '- Imagen 1: la hoja completa.\n- Imágenes 2 a ' + (franjas + 1) + ': franjas horizontales ampliadas de la misma hoja, de arriba hacia abajo, que se superponen un poco. Usá las franjas para leer bien los números y la hoja completa para ubicarte. No dupliques celdas.'
+      : '- Una imagen con la hoja completa.',
+    '',
+    'Cómo es la planilla:',
+    '- Está dividida en bloques semanales. Cada bloque tiene una fila de encabezado con el número y el nombre de cada día (por ejemplo "7 LUNES", "8 MARTES") y debajo una fila por persona, con el cargo y el nombre impresos a la izquierda (por ejemplo "Facilitador Karen").',
+    '- Una columna sin número de día en el encabezado es de otro mes: ignorala. Solo días del 1 al ' + nDias + '.',
+    '- Personas que me interesan: ' + [...new Set(nombres)].join(', ') + '. Transcribí también las otras filas que aparezcan.',
+    '- Si en un bloque el nombre impreso está tachado y hay otro nombre escrito a mano al lado, poné las celdas de ese bloque en una fila aparte con el nombre escrito a mano.',
+    '',
+    'Cómo transcribir cada celda:',
+    '- Un horario de entrada y salida va como "HH:MM-HH:MM" en formato 24 horas. Ejemplos: "08 A 16" → "08:00-16:00"; "0930 A 1330" → "09:30-13:30"; "15:26A1835" → "15:26-18:35"; "1415A2000" → "14:15-20:00".',
+    '- Ignorá los números entre paréntesis: son el total de horas.',
+    '- Si hay una palabra en vez de horario (NO VINO, NO, MEDICO, OFICINA, X u otra), escribila en mayúsculas y sin tildes.',
+    '- Celda vacía: "".',
+    '- Para cada fila incluí todos los días del mes que tengan columna en la hoja.',
+    '- Si una celda es difícil de leer (tachones, números corregidos o escritos encima, letra ambigua), poné tu mejor lectura y agregá ese día en "dudosas" con una explicación corta de lo que ves, por ejemplo "el primer número puede ser 14:09 o 14:00". No inventes datos que no están.',
+    '',
+    'Respondé solo con JSON con esta forma:',
+    '{"mes_en_planilla":"SETIEMBRE","filas":[{"nombre":"Facilitador Karen","celdas":{"1":"08:00-16:00","2":"NO VINO","3":""},"dudosas":{"2":"motivo"}}]}',
+    '"mes_en_planilla" es el mes escrito en la hoja; si hay uno tachado, el que no está tachado.',
+  ].join('\n');
+}
+$('btn-leer').onclick = async () => {
+  if (!E.foto || !E.api.clave) return;
+  if (E.datos && !confirm('Ya hay datos cargados para este mes. ¿Reemplazarlos con una lectura nueva de la foto?')) return;
+  const msg = $('mensaje-lectura'); msg.replaceChildren();
+  $('btn-leer').disabled = true;
+  $('progreso').classList.remove('oculto');
+  $('progreso-texto').textContent = 'Preparando la foto…';
+  E.ctl = new AbortController();
+  const t0 = Date.now();
+  let reloj = null;
+  try {
+    const { imgs, franjas } = await prepararImagenes(E.foto);
+    const contenido = [];
+    for (const b of imgs) contenido.push({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: await blobABase64(b) } });
+    contenido.push({ type: 'text', text: armarPrompt(franjas) });
+    reloj = setInterval(() => { $('progreso-texto').textContent = 'Leyendo la planilla… ' + Math.round((Date.now() - t0) / 1000) + ' s'; }, 1000);
+    $('progreso-texto').textContent = 'Leyendo la planilla…';
+    const { texto, cortado } = await llamarClaude(contenido, 16000, E.ctl.signal);
+    const res = parsearJSON(texto);
+    if (cortado || !res || !Array.isArray(res.filas)) throw { code: 'json' };
+    const { datos, ignoradas } = asignarLectura(E.config, E.anio, E.mes, res);
+    E.datos = datos; E.fuente = 'foto';
+    const avisos = [];
+    const mesLeido = normTxt(res.mes_en_planilla || '');
+    const mesSel = normTxt(MESES[E.mes - 1]);
+    if (mesLeido && !mesLeido.includes(mesSel) && !(mesSel === 'SETIEMBRE' && mesLeido.includes('SEPTIEMBRE')))
+      avisos.push(el('div', { class: 'aviso alerta' }, 'La hoja dice ' + res.mes_en_planilla + ' y elegiste ' + MESES[E.mes - 1] + '. Revisá que sea el mes correcto.'));
+    if (ignoradas.length)
+      avisos.push(el('div', { class: 'aviso' }, 'Filas que no usé porque no coinciden con nadie de la configuración: ' + ignoradas.join(', ') + '.'));
+    msg.replaceChildren(...avisos);
+    abrirRevision();
+    guardarMesPronto();
+  } catch (e) {
+    if (!(e && e.code === 'cancelled')) msg.replaceChildren(el('div', { class: 'aviso alerta' }, mensajeError(e)));
+  } finally {
+    clearInterval(reloj);
+    $('progreso').classList.add('oculto');
+    actualizarLectura();
+  }
+};
+$('btn-parar').onclick = () => E.ctl && E.ctl.abort();
+
+// ---- Revisión ----
+function celda(pid, d) { return ((E.datos || {})[pid] || {})[d]; }
+function estadoCelda(p, d) {
+  return calcularDia(p, E.config, E.anio, E.mes, d, celda(p.id, d));
+}
+function pendientePor(p) {
+  let dudosas = 0, malas = 0;
+  for (let d = 1; d <= E.corte; d++) {
+    const r = estadoCelda(p, d);
+    if (!r) continue;
+    const c = celda(p.id, d);
+    if (r.estado === 'invalido') malas++;
+    else if ((c && c.dudosa && !c.ok) || r.codigoNuevo) dudosas++;
+  }
+  return { dudosas, malas };
+}
+function textoResultado(p, r) {
+  if (r.estado === 'falta') return { t: r.obs === 'Sin registro' ? 'Falta (vacía)' : 'Falta', c: 'falta' };
+  if (r.estado === 'invalido') return { t: r.obs, c: 'mal' };
+  if (r.estado === 'obs') return { t: 'Observación: ' + r.obs + (r.codigoNuevo ? '. Código nuevo, agregalo en Configuración' : ''), c: 'obs' };
+  const partes = [fmtDur(r.trab)];
+  if (r.tarde) partes.push(fmtDur(r.tarde) + ' tarde');
+  if (r.salAnt) partes.push('se fue ' + fmtDur(r.salAnt) + ' antes');
+  if (r.falt) partes.push('faltan ' + fmtDur(r.falt));
+  if (r.extra) partes.push(fmtDur(r.extra) + ' extra');
+  return { t: partes.join(', '), c: '' };
+}
+function pintarRevision() {
+  const activos = personasDelMes();
+  const cont = $('personas');
+  cont.replaceChildren(...activos.map(p => {
+    const { dudosas, malas } = pendientePor(p);
+    return el('button', { class: 'chip', 'aria-pressed': String(p.id === E.personaSel), onclick: () => { E.personaSel = p.id; pintarRevision(); } },
+      p.nombre,
+      malas ? el('span', { class: 'cuenta mal', title: 'Con error' }, malas) : null,
+      dudosas ? el('span', { class: 'cuenta', title: 'Para revisar' }, dudosas) : null);
+  }));
+  const p = activos.find(x => x.id === E.personaSel);
+  const lista = $('dias');
+  lista.replaceChildren();
+  if (p) for (let d = 1; d <= E.corte; d++) {
+    const r0 = estadoCelda(p, d);
+    if (!r0) continue;
+    lista.append(filaDia(p, d));
+  }
+  actualizarPendientes();
+}
+function filaDia(p, d) {
+  const li = el('li', { class: 'dia', id: 'dia-' + d });
+  const dow = new Date(E.anio, E.mes - 1, d).getDay();
+  const c0 = celda(p.id, d) || {};
+  const input = el('input', { type: 'text', value: c0.v || '', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': p.nombre + ', ' + DIAS_LARGOS[dow] + ' ' + d, placeholder: 'vacía = falta' });
+  const res = el('span', { class: 'resultado' });
+  const nota = el('div', { class: 'nota' });
+  const actualizar = () => {
+    const c = celda(p.id, d) || {};
+    const r = estadoCelda(p, d);
+    const { t, c: cls } = textoResultado(p, r);
+    res.textContent = t; res.className = 'resultado ' + cls;
+    const dudosa = c.dudosa && !c.ok;
+    li.classList.toggle('dudosa', !!(dudosa || r.codigoNuevo) && r.estado !== 'invalido');
+    li.classList.toggle('invalida', r.estado === 'invalido');
+    nota.replaceChildren();
+    if (dudosa) {
+      nota.append(el('span', {}, c.dudosa));
+      nota.append(el('button', { class: 'btn sec chico', onclick: () => { c.ok = true; actualizar(); actualizarChips(); actualizarPendientes(); pintarResultado(); guardarMesPronto(); } }, 'Está bien'));
+    }
+    if (c.manual) nota.append(el('span', {}, 'Se leyó: ', c.leido ? el('span', { class: 'leido' }, c.leido) : 'vacía'));
+    nota.classList.toggle('oculto', !nota.childNodes.length);
+  };
+  input.addEventListener('input', () => {
+    E.datos[p.id] = E.datos[p.id] || {};
+    const c = E.datos[p.id][d] = E.datos[p.id][d] || { v: '', leido: '', dudosa: '', manual: false };
+    c.v = input.value;
+    c.manual = E.fuente === 'foto' && normalizarValor(c.v) !== (c.leido || '');
+    if (c.dudosa) c.ok = true;
+    actualizar(); actualizarPendientes(); pintarResultado(); guardarMesPronto();
+  });
+  input.addEventListener('change', () => {
+    const c = celda(p.id, d); if (!c) return;
+    const n = normalizarValor(input.value);
+    if (parseValor(input.value).tipo !== 'invalido' && n !== input.value) { input.value = n; c.v = n; c.manual = E.fuente === 'foto' && n !== (c.leido || ''); actualizar(); }
+    actualizarChips();
+  });
+  li.append(el('div', { class: 'fecha' }, DIAS_CORTOS[dow] + ' ' + d), el('div', { class: 'entrada-linea' }, input, res), nota);
+  actualizar();
+  return li;
+}
+function actualizarChips() {
+  const activos = personasDelMes();
+  $('personas').querySelectorAll('.chip').forEach((b, i) => {
+    const p = activos[i]; if (!p) return;
+    const { dudosas, malas } = pendientePor(p);
+    b.replaceChildren(p.nombre,
+      malas ? el('span', { class: 'cuenta mal' }, malas) : '',
+      dudosas ? el('span', { class: 'cuenta' }, dudosas) : '');
+  });
+}
+function totalPendientes() {
+  let dudosas = 0, malas = 0;
+  for (const p of personasDelMes()) { const x = pendientePor(p); dudosas += x.dudosas; malas += x.malas; }
+  return { dudosas, malas };
+}
+function actualizarPendientes() {
+  const { dudosas, malas } = totalPendientes();
+  const partes = [];
+  if (malas) partes.push(malas + (malas === 1 ? ' celda con error' : ' celdas con error'));
+  if (dudosas) partes.push(dudosas + (dudosas === 1 ? ' celda para revisar' : ' celdas para revisar'));
+  $('pendientes').textContent = partes.length ? partes.join(' y ') + '.' : 'No quedan celdas marcadas. Igual conviene recorrer cada persona.';
+  $('btn-siguiente').classList.toggle('oculto', !partes.length);
+}
+$('btn-siguiente').onclick = () => {
+  const activos = personasDelMes();
+  const ini = Math.max(0, activos.findIndex(p => p.id === E.personaSel));
+  for (let k = 0; k < activos.length; k++) {
+    const p = activos[(ini + k) % activos.length];
+    for (let d = 1; d <= E.corte; d++) {
+      const r = estadoCelda(p, d); if (!r) continue;
+      const c = celda(p.id, d);
+      if (r.estado === 'invalido' || (c && c.dudosa && !c.ok) || r.codigoNuevo) {
+        if (p.id !== E.personaSel) { E.personaSel = p.id; pintarRevision(); }
+        const li = $('dia-' + d);
+        if (li) { li.scrollIntoView({ block: 'center' }); li.querySelector('input').focus({ preventScroll: true }); }
+        return;
+      }
+    }
+  }
+};
+
+// ---- Resultado ----
+function pintarResultado() {
+  const res = calcularMes({ ...E.config, personas: personasDelMes() }, E.anio, E.mes, E.corte, E.datos);
+  const ultimo = diasEnMes(E.anio, E.mes);
+  $('resultado-bajada').textContent = MESES[E.mes - 1][0].toUpperCase() + MESES[E.mes - 1].slice(1) + ' ' + E.anio + (E.corte < ultimo ? ', del 1 al ' + E.corte + '.' : ', mes completo.');
+  const cab = ['Persona', 'Faltas', 'Observ.', 'Llegadas tarde', 'Min. tarde', 'Salida antic.', 'Faltante', 'Extra'];
+  const tabla = $('tabla-resumen');
+  tabla.replaceChildren(
+    el('thead', {}, el('tr', {}, cab.map(c => el('th', { scope: 'col' }, c)))),
+    el('tbody', {}, res.map(r => {
+      const t = r.tot, fijo = r.persona.tipo === 'fijo';
+      const td = (v, cls) => el('td', { class: cls || null }, v);
+      return el('tr', {},
+        el('th', { scope: 'row', style: 'text-align:left' }, r.persona.nombre),
+        td(t.faltas, t.faltas ? 'rojo' : ''), td(t.obs),
+        fijo ? td(t.llegadasTarde, t.llegadasTarde ? 'rojo' : '') : td('no aplica', 'na'),
+        fijo ? td(fmtDur(t.tarde), t.tarde ? 'rojo' : '') : td('no aplica', 'na'),
+        fijo ? td(fmtDur(t.salAnt), t.salAnt ? 'rojo' : '') : td('no aplica', 'na'),
+        fijo ? td('no aplica', 'na') : td(fmtDur(t.falt), t.falt ? 'rojo' : ''),
+        td(fmtDur(t.extra)));
+    })));
+  const { dudosas, malas } = totalPendientes();
+  const av = $('aviso-descarga');
+  if (malas) av.replaceChildren(el('div', { class: 'aviso alerta' }, 'Corregí ' + (malas === 1 ? 'la celda con error' : 'las ' + malas + ' celdas con error') + ' para poder descargar el Excel.'));
+  else if (dudosas) av.replaceChildren(el('div', { class: 'aviso marca' }, (dudosas === 1 ? 'Queda 1 celda' : 'Quedan ' + dudosas + ' celdas') + ' para revisar. Podés descargar igual, pero conviene revisarlas antes.'));
+  else av.replaceChildren();
+  $('btn-excel').disabled = !!malas;
+}
+
+// ---- Guardado del mes ----
+function guardarMesPronto() {
+  escribirDoc(claveMes(), { datos: E.datos, corte: E.corte, fuente: E.fuente, actualizado: new Date().toISOString() });
+  $('estado-mes').textContent = 'Revisión guardada en este navegador';
+  $('estado-mes').className = 'estado-guardado ok';
+}
+
+// ---- Excel ----
+function descargar(nombre, blob) {
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href: url, download: nombre });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+function cargarScript(src) {
+  return new Promise((ok, mal) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = mal; document.head.append(s); });
+}
+let excelLib = null;
+function cargarExcelJS() {
+  if (!excelLib) excelLib = (window.ExcelJS ? Promise.resolve() : cargarScript('https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js')
+    .catch(() => cargarScript('https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js'))).then(() => window.ExcelJS);
+  return excelLib;
+}
+$('btn-excel').onclick = async () => {
+  const btn = $('btn-excel');
+  btn.disabled = true; const txt = btn.textContent; btn.textContent = 'Armando el Excel…';
+  const av = $('aviso-descarga');
+  let error = null;
+  try {
+    const ExcelJS = await cargarExcelJS();
+    if (!ExcelJS) throw { code: 'lib' };
+    const res = calcularMes({ ...E.config, personas: personasDelMes() }, E.anio, E.mes, E.corte, E.datos);
+    const buf = await construirExcel(ExcelJS, res, E.anio, E.mes, E.corte);
+    const nombre = 'asistencia-' + MESES[E.mes - 1] + '-' + E.anio + (E.corte < diasEnMes(E.anio, E.mes) ? '-hasta-' + E.corte : '') + '.xlsx';
+    descargar(nombre, new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  } catch (e) {
+    if (!(e && e.code === 'declined')) error = e && e.code === 'lib' ? 'No se pudo cargar el generador de Excel. Revisá la conexión y probá de nuevo.' : 'No se pudo descargar el Excel. Probá de nuevo.';
+  }
+  btn.textContent = txt; pintarResultado();
+  if (error) av.append(el('div', { class: 'aviso alerta' }, error));
+};
+
+// ---- Configuración: API, exportar e importar ----
+$('ir-config').onclick = () => mostrarVista('config');
+$('btn-ver-clave').onclick = () => {
+  const i = $('cfg-clave'); const ver = i.type === 'password';
+  i.type = ver ? 'text' : 'password'; $('btn-ver-clave').textContent = ver ? 'Ocultar' : 'Mostrar';
+};
+$('btn-probar').onclick = async () => {
+  const est = $('estado-api');
+  const prev = E.api;
+  E.api = { clave: $('cfg-clave').value.trim(), modelo: $('cfg-modelo').value };
+  if (!E.api.clave) { est.textContent = 'Pegá la API key primero.'; est.className = 'estado-guardado'; E.api = prev; return; }
+  est.textContent = 'Probando…'; est.className = 'estado-guardado';
+  try {
+    await llamarClaude([{ type: 'text', text: 'Respondé solo: ok' }], 5);
+    est.textContent = 'Conexión correcta. Tocá "Guardar configuración" para dejarla guardada.'; est.className = 'estado-guardado ok';
+  } catch (e) { est.textContent = mensajeError(e); est.className = 'estado-guardado'; }
+  E.api = prev;
+};
+$('btn-exportar').onclick = () => {
+  const c = E.configBorrador || E.config;
+  descargar('configuracion-asistencia.json', new Blob([JSON.stringify({ tipo: 'config-asistencia', config: c }, null, 2)], { type: 'application/json' }));
+};
+$('importar').onchange = async () => {
+  const f = $('importar').files[0]; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    const c = j && j.config;
+    if (!c || !Array.isArray(c.personas)) throw 0;
+    E.configBorrador = c; pintarConfig(); marcarSinGuardar();
+    $('estado-config').textContent = 'Configuración importada. Revisala y tocá "Guardar configuración".';
+  } catch (e) {
+    $('estado-config').textContent = 'Ese archivo no es una configuración exportada desde esta planilla.';
+  }
+  $('importar').value = '';
+};
+
+// ---- Inicio ----
+(function iniciar() {
+  const cfg = LS.get('asis:config/principal');
+  if (cfg && Array.isArray(cfg.personas)) E.config = cfg;
+  const api = LS.get('asis:api');
+  if (api) E.api = Object.assign(E.api, api);
+  const hoy = new Date();
+  let a = hoy.getFullYear(), m = hoy.getMonth() + 1;
+  if (hoy.getDate() <= 10) { m--; if (!m) { m = 12; a--; } }
+  fijarMes(a, m);
+  actualizarLectura();
+  cargarExcelJS().catch(() => { });
+})();
+</script>
+</body>
+</html>
